@@ -19,7 +19,7 @@ Before you begin, ensure you have the following installed:
 1. Clone this repository:
 
 
-   git clone https://github.com/your-username/PrayerApp.git
+   git clone https://github.com/ortiz2030/PrayerApp.git
    cd prayer-generator-app
 
 
