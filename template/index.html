@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Prayer Generator</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+   </head>
+<body>
+  <h1>Welcome to Prayer Generator App</h1>
+
+  <div class="chat-box">
+    <ul id="messages"></ul>
+  </div>
+
+  <form action="/send_message" method="POST">
+    <input type="text" name="user_input" placeholder="Generate Prayer for..." required>
+    <input type="submit" value="Send">
+  </form>
+
+  <script>
+    var messages = document.getElementById('messages');
+
+    function appendMessage(message) {
+      var li = document.createElement('li');
+      li.classList.add('message');
+      li.classList.add(message.role);
+      li.innerHTML = message.content;
+      messages.appendChild(li);
+    }
+
+    function loadConversations() {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/get_conversations');
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          var conversations = JSON.parse(xhr.responseText);
+          for (var i = 0; i < conversations.length; i++) {
+            var conversation = conversations[i];
+            for (var j = 0; j < conversation.length; j++) {
+              var message = conversation[j];
+              appendMessage(message);
+            }
+          }
+        }
+      };
+      xhr.send();
+    }
+
+    function sendMessage() {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/send_message');
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          var response = xhr.responseText;
+          appendMessage({
+            role: 'system',
+            content: response
+          });
+        }
+      };
+      xhr.send('user_input=' + document.querySelector('input[name="user_input"]').value);
+    }
+
+    loadConversations();
+
+    document.querySelector('form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      sendMessage();
+    });
+  </script>
+</body>
+</html>
